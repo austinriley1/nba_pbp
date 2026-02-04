@@ -31,7 +31,6 @@ warnings.filterwarnings('ignore')
 
 #PULL IN GAMES WE ALREADY HAVE
 game_ids_yesterday = pd.read_csv('current_season_gameids.csv')
-game_ids_yesterday['gameid'] = game_ids_yesterday['0']
 game_ids_yesterday = pd.DataFrame(game_ids_yesterday['gameid'])
 game_ids_yesterday['gameid'] = game_ids_yesterday['gameid'].astype(int)
 
@@ -53,23 +52,22 @@ game_ids_today['gameid'] = game_ids_today['gameid'].astype(int)
 game_ids_compare = game_ids_today.merge(game_ids_yesterday.drop_duplicates(), on='gameid', 
                    how='left', indicator=True)
 game_ids_diff = game_ids_compare[game_ids_compare['_merge'] == 'left_only']['gameid']
-game_ids_diff
 
 
-# create function that gets pbp logs from the 2020-21 season
-def get_data(game_id):
-    play_by_play_url = "https://cdn.nba.com/static/json/liveData/playbyplay/playbyplay_"+game_id+".json"
-    response = requests.get(url=play_by_play_url, headers=headers).json()
-    play_by_play = response['game']['actions']
-    df = pd.DataFrame(play_by_play)
-    df['gameid'] = game_id
-    return df
-# get data from all ids (takes awhile)
-pbpdata = []
-for game_id in game_ids_diff.to_list():
-    game_data = get_data(game_id)
-    pbpdata.append(game_data)
-df = pd.concat(pbpdata, ignore_index=True)
+# # create function that gets pbp logs from the 2020-21 season
+# def get_data(game_id):
+#     play_by_play_url = "https://cdn.nba.com/static/json/liveData/playbyplay/playbyplay_"+game_id+".json"
+#     response = requests.get(url=play_by_play_url, headers=headers).json()
+#     play_by_play = response['game']['actions']
+#     df = pd.DataFrame(play_by_play)
+#     df['gameid'] = game_id
+#     return df
+# # get data from all ids (takes awhile)
+# pbpdata = []
+# for game_id in game_ids_diff.to_list():
+#     game_data = get_data(game_id)
+#     pbpdata.append(game_data)
+# df = pd.concat(pbpdata, ignore_index=True)
 
 
 

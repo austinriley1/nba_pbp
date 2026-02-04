@@ -97,5 +97,10 @@ for i, gameid in enumerate(season_games, 1):
 
 box_score_full_df = pd.concat(all_box_scores,ignore_index=True)
 
+current_datetime = datetime.now().strftime("%Y-%m-%d")
+
+filename = f"box_score_data_{current_datetime}.csv"
+
+box_score_full_df.to_csv(filename, index=False)
 
 

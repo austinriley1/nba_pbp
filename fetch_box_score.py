@@ -29,11 +29,33 @@ headers  = {
 }
 warnings.filterwarnings('ignore')
 
+#PULL IN GAMES WE ALREADY HAVE
+game_ids_yesterday = pd.read_csv('current_season_gameids.csv')
+game_ids_yesterday['gameid'] = game_ids_yesterday['0']
+game_ids_yesterday = pd.DataFrame(game_ids_yesterday['gameid'])
+game_ids_yesterday['gameid'] = game_ids_yesterday['gameid'].astype(int)
+
+
+#GET ALL GAMES 2025-26
 gamefinder = leaguegamefinder.LeagueGameFinder(season_nullable='2025-26', league_id_nullable='00', 
                                               season_type_nullable='Regular Season')
 games = gamefinder.get_data_frames()[0]
 # Get a list of distinct game ids 
 game_ids = games['GAME_ID'].unique().tolist()
+
+game_ids_today = pd.DataFrame(game_ids)
+game_ids_today.columns = game_ids_today.columns.astype(str)
+game_ids_today['gameid'] = game_ids_today['0']
+game_ids_today = pd.DataFrame(game_ids_today['gameid'])
+game_ids_today['gameid'] = game_ids_today['gameid'].astype(int)
+
+#GET GAMES WE NEED TO GET FROM TODAY
+game_ids_compare = game_ids_today.merge(game_ids_yesterday.drop_duplicates(), on='gameid', 
+                   how='left', indicator=True)
+game_ids_diff = game_ids_compare[game_ids_compare['_merge'] == 'left_only']['gameid']
+game_ids_diff
+
+
 # create function that gets pbp logs from the 2020-21 season
 def get_data(game_id):
     play_by_play_url = "https://cdn.nba.com/static/json/liveData/playbyplay/playbyplay_"+game_id+".json"
@@ -44,22 +66,17 @@ def get_data(game_id):
     return df
 # get data from all ids (takes awhile)
 pbpdata = []
-for game_id in game_ids:
+for game_id in game_ids_diff.to_list():
     game_data = get_data(game_id)
     pbpdata.append(game_data)
 df = pd.concat(pbpdata, ignore_index=True)
-gameids = df['gameid'].drop_duplicates()
+
+
 
 #GET ALL ACTIVE PLAYERS, GET THEIR NAMES, IDS, AND ALL UNIQUE PLAYER ID AND GAME ID FROM CURRENT SEASON
 
-player_df = pd.DataFrame(players.get_players())
-player_id = player_df[['id', 'full_name']][player_df['is_active'] == True] .drop_duplicates() 
-playernames = player_id['full_name'].to_list()
-player_ids = player_id['id'].to_list()
-games_df = df[['personId','gameid']].drop_duplicates()
-
 # get data for all games
-season_games = games_df['gameid'].unique()
+season_games = game_ids_diff.unique()
 all_box_scores = []
 
 for i, gameid in enumerate(season_games, 1):

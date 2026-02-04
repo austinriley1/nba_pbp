@@ -1,0 +1,17 @@
+requests
+pandas
+numpy
+io
+time
+datetime
+nba_api.stats.static
+nba_api.stats.endpoints
+nba_api.stats.static
+matplotlib.pyplot
+nba_api.stats.endpoints
+zoneinfo
+dateutil.tz
+datetime
+warnings
+isodate
+math

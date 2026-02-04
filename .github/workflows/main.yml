@@ -22,7 +22,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-     WIP:   
+     # WIP:   
       # - name: Cache CRAN packages
       #   uses: actions/cache@v3 
       #   with:
@@ -30,24 +30,24 @@ jobs:
       #     key: ${{ runner.os }}-r-${{ hashFiles('**/DESCRIPTION') }}
       #     restore-keys: ${{ runner.os }}-r-
           
-      # - name: Install CRAN packages
-      #   uses: r-lib/actions/setup-r-dependencies@v2
-      #   with: 
-      #     packages: jsonlite, dplyr
+      - name: Install CRAN packages
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with: 
+          packages: datetime, nba_api.stats.endpoints, pandas, numpy, nba_api.stats.static, warnings
           
-      # - name: Run R update script
-      #   run: Rscript get_mvp_odds.R
-      #   shell: bash
+      - name: Run Python update script
+        run: python fetch_box_score.py
+        shell: bash
 
-      # - name: Commit changes in data folder
-      #   run: |
-      #     git config --global user.name 'github-actions[bot]'
-      #     git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-      #     git add data/mvp_odds*.csv
-      #     git diff --cached --quiet || git commit -m "Auto-update: mvp odds"
-      #   shell: bash
+      - name: Commit changes in data folder
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add data/box_score_data_*.csv
+          git diff --cached --quiet || git commit -m "Auto-update: box score data"
+        shell: bash
 
-      # - name: Push changes
-      #   run: git push
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push changes
+        run: git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -25,7 +25,7 @@ jobs:
       - name: Install CRAN packages
         uses: r-lib/actions/setup-r-dependencies@v2
         with: 
-          packages: datetime, nba_api.stats.endpoints, pandas, numpy, nba_api.stats.static, warnings
+          packages: nba_api, pandas, numpy
           
       - name: Run Python update script
         run: python fetch_box_score.py

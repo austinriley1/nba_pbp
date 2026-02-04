@@ -37,7 +37,7 @@ game_ids_yesterday['gameid'] = game_ids_yesterday['gameid'].astype(int)
 
 #GET ALL GAMES 2025-26
 gamefinder = leaguegamefinder.LeagueGameFinder(season_nullable='2025-26', league_id_nullable='00', 
-                                              season_type_nullable='Regular Season')
+                                              season_type_nullable='Regular Season', timeout=120,headers=headers)
 games = gamefinder.get_data_frames()[0]
 # Get a list of distinct game ids 
 game_ids = games['GAME_ID'].unique().tolist()
